@@ -135,22 +135,27 @@ async function loadComics(searchQuery = '') {
 }
 
 function createComicCard(comic, index) {
-    const card = document.createElement('div');
-    card.className = 'comic-card';
-    card.style.animationDelay = `${index * 0.05}s`;
-    
-    card.innerHTML = `
-        <img src="${comic.cover_image || 'https://images.pexels.com/photos/1005012/pexels-photo-1005012.jpeg?auto=compress&cs=tinysrgb&w=400'}" 
-             alt="${comic.title}" 
-             class="comic-cover">
-        <div class="comic-info">
-            <h3 class="comic-title">${comic.title}</h3>
-            <p class="comic-author">${comic.author || 'Unknown Author'}</p>
-        </div>
+    const avgColor = generateAverageColor(comic.title);
+    const article = document.createElement('article');
+    article.style.setProperty('--avarage-color', avgColor);
+    article.style.animationDelay = `${index * 0.05}s`;
+
+    article.innerHTML = `
+        <figure>
+            <img src="${comic.cover_image || 'https://images.pexels.com/photos/1005012/pexels-photo-1005012.jpeg?auto=compress&cs=tinysrgb&w=400'}"
+                 alt="${comic.title}">
+            <figcaption>${comic.title}</figcaption>
+        </figure>
     `;
 
-    card.addEventListener('click', () => showComicDetail(comic.id));
-    return card;
+    article.addEventListener('click', () => showComicDetail(comic.id));
+    return article;
+}
+
+function generateAverageColor(title) {
+    const colors = ['#b0b6a9', '#afa294', '#3c3c3d', '#b47460', '#60a6ce', '#46666f', '#8e898f', '#8d516e'];
+    const hash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
 }
 
 async function showComicDetail(comicId) {
